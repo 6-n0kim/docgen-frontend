@@ -193,12 +193,10 @@ export const useMemberStore = create<MemberState>()(
       deleteMember: async (password: string, passwordConfirm: string) => {
         set({ isLoading: true, error: null });
         try {
-          const accessToken = localStorage.getItem('accessToken');
           const response = await fetch(`${API_BASE_URL}/member`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
-              Authorization: `Bearer ${accessToken}`,
             },
             body: JSON.stringify({ password, passwordConfirm }),
           });
@@ -236,15 +234,12 @@ export const useMemberStore = create<MemberState>()(
         console.log(id);
         set({ isLoading: true, error: null });
         try {
-          const accessToken = localStorage.getItem('accessToken');
-
           const response = await fetch(
             `${API_BASE_URL}/member/password/update`,
             {
               method: 'PATCH',
               headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`,
               },
               body: JSON.stringify({
                 currentPassword,

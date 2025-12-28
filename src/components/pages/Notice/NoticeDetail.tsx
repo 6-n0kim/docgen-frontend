@@ -4,7 +4,6 @@ import Modal from '../../common/Modal';
 import NoticeCreateModal from './NoticeCreateModal';
 import '../../../styles/main.css';
 import { useNoticeStore } from '../../../stores/useNoticeStore';
-import { useAuthenticationStore } from '../../../stores/useAuthenticationStore';
 
 interface Notice {
   id: number;
@@ -19,8 +18,6 @@ const NoticeDetail: React.FC = () => {
   const [selectedNotice, setSelectedNotice] = useState<Notice | null>(null);
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { user } = useAuthenticationStore();
-  const memberRole = user?.role || 'USER';
 
   const {
     currentNotice,
@@ -212,32 +209,30 @@ const NoticeDetail: React.FC = () => {
           </div>
         </div>
 
-        {memberRole === 'ADMIN' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-green-200/50 p-6">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                공지사항 관리
-              </h3>
-              <div className="grid grid-cols-2 gap-40">
-                <button
-                  className="w-50 px-4 py-3 bg-slate-500 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
-                  onClick={() => openEditModal(currentNotice)}
-                  title="수정"
-                >
-                  공지사항 수정
-                </button>
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-green-200/50 p-6">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              공지사항 관리
+            </h3>
+            <div className="grid grid-cols-2 gap-40">
+              <button
+                className="w-50 px-4 py-3 bg-slate-500 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+                onClick={() => openEditModal(currentNotice)}
+                title="수정"
+              >
+                공지사항 수정
+              </button>
 
-                <button
-                  className="w-50 px-4 py-3 bg-rose-500 hover:bg-rose-600 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
-                  onClick={() => openDeleteModal(currentNotice)}
-                  title="삭제"
-                >
-                  공지사항 삭제
-                </button>
-              </div>
+              <button
+                className="w-50 px-4 py-3 bg-rose-500 hover:bg-rose-600 text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+                onClick={() => openDeleteModal(currentNotice)}
+                title="삭제"
+              >
+                공지사항 삭제
+              </button>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* 공지사항 수정 모달 */}

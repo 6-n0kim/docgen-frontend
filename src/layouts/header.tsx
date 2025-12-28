@@ -1,6 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuthenticationStore } from '../stores/useAuthenticationStore';
+import { Link } from 'react-router-dom';
 interface HeaderProps {
   onMenuToggle?: () => void;
   sidebarOpen?: boolean;
@@ -10,12 +9,6 @@ const Header: React.FC<HeaderProps> = ({
   onMenuToggle,
   sidebarOpen = true,
 }) => {
-  const { isAuthenticated, signout } = useAuthenticationStore();
-  const navigate = useNavigate();
-  const handleLogout = async () => {
-    await signout();
-    navigate('/');
-  };
 
   return (
     <header className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-200/50 sticky top-0 z-0 h-[97px] backdrop-blur-sm shadow-sm">
@@ -87,42 +80,6 @@ const Header: React.FC<HeaderProps> = ({
 
           {/* 우측 버튼 영역 */}
           <div className="flex items-center space-x-4">
-            {/* 사용자 인증 상태에 따른 버튼들 */}
-            {isAuthenticated ? (
-              <>
-                {/* 마이페이지 버튼 */}
-                <Link
-                  to="/mypage"
-                  className="px-6 py-3 text-sm font-medium text-green-700 bg-white/60 border border-green-200 rounded-xl hover:bg-white hover:shadow-md transition-all duration-200 backdrop-blur-sm"
-                >
-                  마이페이지
-                </Link>
-                {/* 로그아웃 버튼 */}
-                <button
-                  onClick={handleLogout}
-                  className="px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 border border-green-600 rounded-xl hover:from-green-700 hover:to-emerald-700 hover:shadow-lg transition-all duration-200 shadow-md"
-                >
-                  로그아웃
-                </button>
-              </>
-            ) : (
-              <>
-                {/* 회원가입 버튼 */}
-                <Link
-                  to="/signup"
-                  className="px-6 py-3 text-sm font-medium text-green-700 bg-white/60 border border-green-200 rounded-xl hover:bg-white hover:shadow-md transition-all duration-200 backdrop-blur-sm"
-                >
-                  회원가입
-                </Link>
-                {/* 로그인 버튼 */}
-                <Link
-                  to="/login"
-                  className="px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 border border-green-600 rounded-xl hover:from-green-700 hover:to-emerald-700 hover:shadow-lg transition-all duration-200 shadow-md"
-                >
-                  로그인
-                </Link>
-              </>
-            )}
           </div>
         </div>
       </div>

@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useAuthenticationStore } from '../../stores/useAuthenticationStore';
-import ProtectedRoute from '../common/ProtectedRoute';
 
 // API 기본 URL 설정
 const API_BASE_URL =
@@ -17,21 +15,18 @@ interface ApiResponse<T> {
 }
 
 const Dashboard: React.FC = () => {
-  const { user } = useAuthenticationStore();
   const [documentCount, setDocumentCount] = useState<number>(0);
   const [projectCount, setProjectCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [recentNotice, setRecentNotice] = useState<any[]>([]);
 
-  // 사용자 문서 개수 조회
+  // 문서 개수 조회
   useEffect(() => {
     const fetchDocumentCount = async () => {
-      if (!user?.id) return;
-
       try {
         setIsLoading(true);
         const response = await fetch(
-          `${API_BASE_URL}/document/users/${user.id}`,
+          `${API_BASE_URL}/document/list`,
           {
             mode: 'cors',
             credentials: 'include',
@@ -58,17 +53,15 @@ const Dashboard: React.FC = () => {
       }
     };
     fetchDocumentCount();
-  }, [user?.id]);
+  }, []);
 
-  // 사용자 프로젝트 개수 조회
+  // 프로젝트 개수 조회
   useEffect(() => {
     const fetchProjectCount = async () => {
-      if (!user?.id) return;
-
       try {
         setIsLoading(true);
         const response = await fetch(
-          `${API_BASE_URL}/projects/count/${user.id}`,
+          `${API_BASE_URL}/projects/list`,
           {
             mode: 'cors',
             credentials: 'include',
@@ -84,8 +77,8 @@ const Dashboard: React.FC = () => {
 
         const result: any = await response.json();
         if (result.success) {
-          // result.id가 문자열로 반환되므로 숫자로 변환
-          setProjectCount(parseInt(result.data.id, 10) || 0);
+          // 프로젝트 배열의 길이로 개수 설정
+          setProjectCount(Array.isArray(result.data) ? result.data.length : 0);
         } else {
           console.error('프로젝트 개수 조회 실패:', result.message);
         }
@@ -96,7 +89,7 @@ const Dashboard: React.FC = () => {
       }
     };
     fetchProjectCount();
-  }, [user?.id]);
+  }, []);
 
   // 공지사항 최근 목록 3개 조회
   useEffect(() => {
@@ -139,17 +132,6 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* 사용자 정보 표시 */}
-        {user && (
-          <div className="mb-6 p-4 bg-green-50 rounded-xl border border-green-200">
-            <h3 className="text-lg font-semibold text-green-800 mb-2">
-              사용자 정보 표시
-            </h3>
-            <p className="text-green-700">이름: {user.name}</p>
-            <p className="text-green-700">이메일: {user.email}</p>
-            {/* <p className="text-green-700">권한: {user.role}</p> */}
-          </div>
-        )}
 
         {/* 통계 카드들 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -268,10 +250,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-const DashboardPage = () => (
-  <ProtectedRoute>
-    <Dashboard />
-  </ProtectedRoute>
-);
-
-export default DashboardPage;
+export default Dashboard;

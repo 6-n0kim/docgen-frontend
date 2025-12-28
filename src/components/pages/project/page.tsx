@@ -5,8 +5,6 @@ import ProjectCreateModal from './ProjectCreateModal';
 import ToastContainer from '../../common/ToastContainer';
 import '../../../styles/main.css';
 import { useProjectStore } from '../../../stores/useProjectStore';
-import ProtectedRoute from '../../common/ProtectedRoute';
-import { useAuthenticationStore } from '../../../stores/useAuthenticationStore';
 import { useToast } from '../../../hooks/useToast';
 
 const Project: React.FC = () => {
@@ -19,21 +17,18 @@ const Project: React.FC = () => {
     projects,
     isLoading,
     error,
-    fetchProjectsByMemberId,
+    fetchProjects,
     createProject,
     updateProject,
     deleteProject,
     clearError,
   } = useProjectStore();
-
-  const { user } = useAuthenticationStore();
-  const memberId = user?.id || 0;
   const { toasts, removeToast, showSuccess, showError } = useToast();
 
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        await fetchProjectsByMemberId(memberId);
+        await fetchProjects();
       } catch (error) {
         console.error('프로젝트 로딩 실패:', error);
       }
@@ -45,7 +40,7 @@ const Project: React.FC = () => {
     return () => {
       clearError();
     };
-  }, [fetchProjectsByMemberId, clearError, memberId]);
+  }, [fetchProjects, clearError]);
 
   const openEditModal = (project: any) => {
     setSelectedProject(project);
@@ -62,7 +57,6 @@ const Project: React.FC = () => {
 
     try {
       await createProject({
-        member_id: memberId,
         title: data.title,
         introduction: data.introduction,
         project_status: data.project_status,
@@ -335,10 +329,4 @@ const Project: React.FC = () => {
   );
 };
 
-const ProjectPage = () => (
-  <ProtectedRoute>
-    <Project />
-  </ProtectedRoute>
-);
-
-export default ProjectPage;
+export default Project;

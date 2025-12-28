@@ -24,7 +24,7 @@ interface Project {
 
 // Project 생성 DTO
 interface CreateProjectDto {
-  member_id: number;
+  member_id?: number;
   title: string;
   introduction: string;
   project_status: 'COMPLETED' | 'IN_PROGRESS' | 'PENDING';
@@ -47,6 +47,7 @@ interface ProjectState {
   error: string | null;
 
   // 액션
+  fetchProjects: () => Promise<void>;
   fetchProjectsByMemberId: (memberId: number) => Promise<void>;
   fetchProjectById: (id: number) => Promise<void>;
   createProject: (projectData: CreateProjectDto) => Promise<void>;
@@ -68,6 +69,32 @@ export const useProjectStore = create<ProjectState>()(
   devtools(
     (set) => ({
       ...initialState,
+
+      // 프로젝트 목록 조회 (전체)
+      fetchProjects: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          console.log('fetchProjects ongoing');
+          const response = await api.get<ApiResponse<Project[]>>(
+            `/projects/list`,
+          );
+          const result = response.data;
+
+          if (result.success) {
+            console.log('fetchProjects success');
+            set({ projects: result.data, isLoading: false });
+          } else {
+            console.log('fetchProjects fail');
+            throw new Error(result.message);
+          }
+        } catch (error) {
+          const apiError = error as ApiError;
+          const errorMessage =
+            apiError.message || '프로젝트 목록 조회에 실패했습니다.';
+          console.log('errorMessage = ' + errorMessage);
+          set({ error: errorMessage, isLoading: false });
+        }
+      },
 
       // 프로젝트 목록 조회 (멤버별)
       fetchProjectsByMemberId: async (memberId: number) => {
