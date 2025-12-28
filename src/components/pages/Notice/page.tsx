@@ -4,12 +4,14 @@ import Modal from '../../common/Modal';
 import NoticeCreateModal from './NoticeCreateModal';
 import '../../../styles/main.css';
 import { useNoticeStore } from '../../../stores/useNoticeStore';
+import { useAuthenticationStore } from '../../../stores/useAuthenticationStore';
 
 const Notice: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedNotice, setSelectedNotice] = useState<any>(null);
+  // const [memberRole, setMemberRole] = useState('USER');
 
   const {
     notices,
@@ -26,6 +28,10 @@ const Notice: React.FC = () => {
     clearError,
     setCurrentPage,
   } = useNoticeStore();
+
+  const { user } = useAuthenticationStore();
+  const memberId = user?.id || 0;
+  const memberRole = user?.role || 'USER';
 
   useEffect(() => {
     const loadNotices = async () => {
@@ -63,6 +69,7 @@ const Notice: React.FC = () => {
         content: data.content,
         noticetype: data.noticetype,
         post_date: data.post_date,
+        member_id: memberId,
       });
       // 공지사항 생성 성공 후 목록 새로고침
       await fetchNoticesAll(currentPage, pageSize);
@@ -174,12 +181,14 @@ const Notice: React.FC = () => {
               중요한 소식과 업데이트를 확인하세요.
             </p>
           </div>
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg"
-          >
-            새 공지 작성
-          </button>
+          {memberRole !== 'USER' && (
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              새 공지 작성
+            </button>
+          )}
         </div>
 
         {/* 공지사항 목록 */}
@@ -232,27 +241,29 @@ const Notice: React.FC = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="flex space-x-2 ml-4">
-                      {/* 액션 아이콘들 */}
-                      <div className="flex-shrink-0 flex flex-col gap-2 ml-4 mt-2">
-                        <button
-                          className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors duration-200"
-                          onClick={() => openEditModal(notice)}
-                          title="수정"
-                        >
-                          <span className="text-gray-600 text-sm font-bold">
-                            ✏️
-                          </span>
-                        </button>
-                        <button
-                          className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors duration-200"
-                          onClick={() => openDeleteModal(notice)}
-                          title="삭제"
-                        >
-                          <span className="text-gray-600 text-sm">🗑️</span>
-                        </button>
+                    {memberRole !== 'USER' && (
+                      <div className="flex space-x-2 ml-4">
+                        {/* 액션 아이콘들 */}
+                        <div className="flex-shrink-0 flex flex-col gap-2 ml-4 mt-2">
+                          <button
+                            className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors duration-200"
+                            onClick={() => openEditModal(notice)}
+                            title="수정"
+                          >
+                            <span className="text-gray-600 text-sm font-bold">
+                              ✏️
+                            </span>
+                          </button>
+                          <button
+                            className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center transition-colors duration-200"
+                            onClick={() => openDeleteModal(notice)}
+                            title="삭제"
+                          >
+                            <span className="text-gray-600 text-sm">🗑️</span>
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               ))

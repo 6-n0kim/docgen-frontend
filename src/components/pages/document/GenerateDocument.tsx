@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import DocumentQuestion from './component/documentQuestion';
 import { api } from '../../../api';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useProjectStore } from '../../../stores';
+import { useAuthenticationStore, useProjectStore } from '../../../stores';
 
 const init_questions: string[] = ['어떤걸 만드실 건가요?'];
 
@@ -11,7 +11,9 @@ const GenerateDocument = () => {
   const [allQnA, setAllQnA] = useState<string[]>([]);
   const [isQuestionEnd, setIsQuestionEnd] = useState<boolean>(false);
   const [isGen, setIsGen] = useState<boolean>(false);
+  const { user } = useAuthenticationStore();
   const {currentProject, fetchProjectById} = useProjectStore();
+  const memberId = user?.id || 0;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams()
   const project_id : string = searchParams.get("project_id")||"";
@@ -38,6 +40,7 @@ const GenerateDocument = () => {
     }
     setIsGen(true);
     const result = await api.post('/document/requirement/', {
+      owner_id: `${memberId}`,
       project_id: project_id,
       requirement: _new.join('\n'),
     });

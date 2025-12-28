@@ -2,30 +2,53 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../../../styles/main.css';
 import { useProjectStore } from '../../../stores';
-
+import ProtectedRoute from '../../common/ProtectedRoute';
+import { useAuthenticationStore } from '../../../stores/useAuthenticationStore';
 const Documents: React.FC = () => {
-  const { projects, isLoading, error, fetchProjects, clearError } =
+  const { projects, isLoading, error, fetchProjectsByMemberId, clearError } =
     useProjectStore();
+
+  const { user, isLoading: authLoading } = useAuthenticationStore();
+  const memberId = user?.id || 0;
 
   // 컴포넌트 마운트 시 프로젝트 목록 조회
   useEffect(() => {
     const loadProjects = async () => {
       try {
-        console.log('📋 프로젝트 조회');
+        console.log('📋 memberId로 프로젝트 조회:', memberId);
 
-        await fetchProjects();
+        await fetchProjectsByMemberId(memberId);
       } catch (error) {
         console.error('프로젝트 로딩 실패:', error);
       }
     };
 
-    loadProjects();
+    // 사용자 정보가 있고 로딩이 완료된 후에만 프로젝트 로딩
+    if (user && !authLoading) {
+      loadProjects();
+    }
 
     // 컴포넌트 언마운트 시 에러 초기화
     return () => {
       clearError();
     };
-  }, [fetchProjects, clearError]);
+  }, [fetchProjectsByMemberId, clearError, memberId, user, authLoading]);
+
+  // 인증 로딩 상태 처리
+  if (authLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-green-200/50 p-8">
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+            <span className="ml-3 text-gray-600">
+              사용자 정보를 불러오는 중...
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // 로딩 상태 처리
   if (isLoading) {
@@ -95,4 +118,10 @@ const Documents: React.FC = () => {
   );
 };
 
-export default Documents;
+const DocumentPage = () => (
+  <ProtectedRoute>
+    <Documents />
+  </ProtectedRoute>
+);
+
+export default DocumentPage;

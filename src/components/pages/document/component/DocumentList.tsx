@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../../../api';
 import DocumentListItem from './DocumentListItem';
+import { useAuthenticationStore } from '../../../../stores';
 
 type document_info = {
   id: string;
@@ -40,6 +41,8 @@ const DOCUMENT_TYPES = [
 const DocumentList = ({project_id}:{project_id:string|undefined}) => {
   const [documents, setDocuments] = useState<document_dict>();
   const navigate = useNavigate();
+  const { user } = useAuthenticationStore();
+  const memberId = user?.id || 0;
 
   useEffect(() => {
     loadList();
@@ -126,6 +129,7 @@ const DocumentList = ({project_id}:{project_id:string|undefined}) => {
       if(documents["requirement_document"].status != "finished") return;
       const result = api.post('document/functional', {
         project_id: project_id,
+        owner_id: `${memberId}`,
       });
       console.log(result);
       setTimeout(() => {
@@ -138,6 +142,7 @@ const DocumentList = ({project_id}:{project_id:string|undefined}) => {
 
       const result = api.post('document/policy', {
         project_id: project_id,
+        owner_id: `${memberId}`,
       });
       console.log(result);
       setTimeout(() => {

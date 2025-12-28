@@ -12,6 +12,11 @@ import Timeline from './components/pages/timeline/page';
 import TimelineDetail from './components/pages/timeline/timeline';
 import { useSidebarStore } from './stores/useSidebarStore';
 import GenerateDocument from './components/pages/document/GenerateDocument';
+import SignUpPage from './components/pages/Authentication/SignUpPage';
+import LoginPage from './components/pages/Authentication/LoginPage';
+import MyPage from './components/pages/MyPage';
+import IdFindPage from './components/pages/Authentication/IdFindPage';
+import PasswordFindPage from './components/pages/Authentication/PasswordFindPage';
 import IntroPage from './components/pages/IntroPage';
 import DocumentPage from './components/pages/document/page';
 import DocumentListPage from './components/pages/document/documentListPage';
@@ -36,6 +41,8 @@ function App() {
                 <Route path="/" element={<IntroPage />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/intro" element={<IntroPage />} />
+                <Route path="/id-find" element={<IdFindPage />} />
+                <Route path="/password-find" element={<PasswordFindPage />} />
                 <Route path="/documents" element={<DocumentPage />} />
                 <Route
                   path="/documents/project/:project_id"
@@ -62,6 +69,9 @@ function App() {
                   path="/generate-document"
                   element={<GenerateDocument />}
                 />
+                <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/mypage" element={<MyPage />} />
               </Routes>
             </div>
           </main>
